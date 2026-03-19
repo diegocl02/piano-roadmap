@@ -90,6 +90,8 @@ export function useAppState() {
           name: roadmap.name,
           created_at: roadmap.createdAt,
           phases: roadmap.phases,
+        }).then(({ error }) => {
+          if (error) console.error('[createRoadmap]', error.message);
         });
       }
       return roadmap;
@@ -104,7 +106,10 @@ export function useAppState() {
         roadmaps: prev.roadmaps.map((r) => (r.id === id ? { ...r, name: name.trim() } : r)),
       }));
       if (user) {
-        supabase.from('roadmaps').update({ name: name.trim() }).eq('id', id);
+        supabase.from('roadmaps').update({ name: name.trim() }).eq('id', id)
+          .then(({ error }) => {
+            if (error) console.error('[renameRoadmap]', error.message);
+          });
       }
     },
     [user]
@@ -121,7 +126,10 @@ export function useAppState() {
           name: updated.name,
           description: updated.description,
           phases: updated.phases,
-        }).eq('id', updated.id);
+        }).eq('id', updated.id)
+          .then(({ error }) => {
+            if (error) console.error('[updateRoadmap]', error.message);
+          });
       }
     },
     [user]
@@ -159,7 +167,9 @@ export function useAppState() {
             by_category: day.byCategory,
           },
           { onConflict: 'user_id,sprint_id,date' }
-        );
+        ).then(({ error }) => {
+          if (error) console.error('[completeDay]', error.message);
+        });
       }
     },
     [user]

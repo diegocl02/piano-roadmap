@@ -1,7 +1,7 @@
 import { Roadmap } from '@/types';
 
 export const seedRoadmap: Roadmap = {
-  id: 'roadmap-jazz-technique',
+  id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
   name: 'Dominio del Jazz y Técnica',
   description: 'Piano roadmap completo para dominar jazz e improvisación',
   createdAt: new Date().toISOString(),
