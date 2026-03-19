@@ -17,8 +17,7 @@ interface RoadmapListProps {
 function getStats(roadmap: Roadmap, completedDays: CompletedDay[]) {
   const phases = roadmap.phases.length;
   const sprints = roadmap.phases.reduce((sum, p) => sum + p.sprints.length, 0);
-  const sprintIds = new Set(roadmap.phases.flatMap((p) => p.sprints.map((s) => s.id)));
-  const daysCompleted = completedDays.filter((d) => sprintIds.has(d.sprintId)).length;
+  const daysCompleted = completedDays.filter((d) => d.roadmapId === roadmap.id).length;
   return { phases, sprints, daysCompleted };
 }
 

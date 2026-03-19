@@ -1,17 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { Sprint, SessionPlan, PracticeSession, CompletedDay, StudyCategory, Roadmap } from '@/types';
+import { Roadmap, Sprint, SessionPlan, PracticeSession, CompletedDay, StudyCategory } from '@/types';
 import { useAppState } from '@/hooks/useAppState';
+import { useAuth } from '@/contexts/AuthContext';
 import { RoadmapList } from '@/components/RoadmapList';
 import { RoadmapOverview } from '@/components/RoadmapOverview';
 import { SessionConfigurator } from '@/components/SessionConfigurator';
 import { PracticeMode } from '@/components/PracticeMode';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { LoginScreen } from '@/components/LoginScreen';
+import { LogOut } from 'lucide-react';
 
 type AppView = 'roadmaps' | 'overview' | 'configure' | 'practice';
 
 export default function Home() {
+  const { user, loading: authLoading, signOut } = useAuth();
   const {
     state,
     hydrated,
@@ -30,15 +34,29 @@ export default function Home() {
   const [selectedRoadmapId, setSelectedRoadmapId] = useState<string | null>(null);
   const [selectedSprint, setSelectedSprint] = useState<Sprint | null>(null);
 
-  // Derive from state so mutations in RoadmapOverview auto-reflect
   const selectedRoadmap: Roadmap | null =
     state.roadmaps.find((r) => r.id === selectedRoadmapId) ?? null;
 
-  if (!hydrated) {
+  // ── Auth loading ──
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-[var(--t-bg)] flex items-center justify-center">
         <div className="font-mono text-cyan-400 text-sm animate-pulse tracking-widest">
           LOADING...
+        </div>
+      </div>
+    );
+  }
+
+  // ── Not logged in ──
+  if (!user) return <LoginScreen />;
+
+  // ── Data loading ──
+  if (!hydrated) {
+    return (
+      <div className="min-h-screen bg-[var(--t-bg)] flex items-center justify-center">
+        <div className="font-mono text-cyan-400 text-sm animate-pulse tracking-widest">
+          CARGANDO...
         </div>
       </div>
     );
@@ -66,7 +84,7 @@ export default function Home() {
   };
 
   const handleCompleteSession = (session: PracticeSession) => {
-    if (!selectedSprint) return;
+    if (!selectedSprint || !selectedRoadmapId) return;
     const byCategory: Record<StudyCategory, number> = {
       technique: 0, jazz: 0, reading: 0, theory: 0, 'ear-training': 0, custom: 0,
     };
@@ -76,8 +94,11 @@ export default function Home() {
     });
     const day: CompletedDay = {
       date: new Date().toISOString().split('T')[0],
+      roadmapId: selectedRoadmapId,
       sprintId: selectedSprint.id,
-      totalMinutes: session.plan.totalMinutes,
+      totalMinutes: Math.round(
+        session.modules.reduce((s, m) => s + m.timeElapsed, 0) / 60
+      ),
       byCategory,
     };
     completeDay(day);
@@ -96,8 +117,16 @@ export default function Home() {
 
   return (
     <>
-      <div className="fixed top-4 right-4 z-50">
+      {/* Top-right controls */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-1">
         <ThemeToggle />
+        <button
+          onClick={signOut}
+          title="Cerrar sesión"
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--t-mute)] hover:text-[var(--t-text)] hover:bg-[var(--t-surf2)] transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+        </button>
       </div>
 
       {view === 'roadmaps' && (

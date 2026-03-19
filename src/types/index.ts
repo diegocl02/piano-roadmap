@@ -85,6 +85,7 @@ export interface PracticeSession {
 
 export interface CompletedDay {
   date: string; // ISO
+  roadmapId: string;
   sprintId: string;
   totalMinutes: number;
   byCategory: Record<StudyCategory, number>;

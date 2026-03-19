@@ -755,12 +755,9 @@ function MiniCalendar({ roadmap, completedDays }: { roadmap: Roadmap; completedD
   const [viewMonth, setViewMonth] = useState(now.getMonth()); // 0-indexed
 
   // Only show sessions belonging to this roadmap
-  const roadmapSprintIds = new Set(
-    roadmap.phases.flatMap((p) => p.sprints.map((s) => s.id))
-  );
   const completedDates = new Set(
     completedDays
-      .filter((d) => roadmapSprintIds.has(d.sprintId))
+      .filter((d) => d.roadmapId === roadmap.id)
       .map((d) => d.date)
   );
 

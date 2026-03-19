@@ -2,56 +2,77 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { AppState, Roadmap, SessionPlan, PracticeSession, CompletedDay } from '@/types';
-
 import { seedRoadmap } from '@/data/seedRoadmap';
-
-const STORAGE_KEY = 'piano-roadmap-state';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 
 const defaultState: AppState = {
-  roadmaps: [seedRoadmap],
+  roadmaps: [],
   completedDays: [],
   currentSessionPlan: null,
   activePracticeSession: null,
 };
 
 export function useAppState() {
+  const { user } = useAuth();
   const [state, setState] = useState<AppState>(defaultState);
   const [hydrated, setHydrated] = useState(false);
 
+  // Load from Supabase whenever the user changes
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        // Migration: old format had roadmap (singular)
-        if (parsed.roadmap && !parsed.roadmaps) {
-          parsed.roadmaps = [parsed.roadmap];
-          delete parsed.roadmap;
-        }
-        setState({ ...defaultState, ...parsed });
+    if (!user) {
+      setState(defaultState);
+      setHydrated(false);
+      return;
+    }
+
+    const userId = user.id;
+
+    async function load() {
+      setHydrated(false);
+
+      const [{ data: roadmapsData }, { data: daysData }] = await Promise.all([
+        supabase.from('roadmaps').select('*').eq('user_id', userId).order('created_at'),
+        supabase.from('completed_days').select('*').eq('user_id', userId),
+      ]);
+
+      let roadmaps: Roadmap[] = (roadmapsData ?? []).map((r) => ({
+        id: r.id,
+        name: r.name,
+        description: r.description ?? undefined,
+        createdAt: r.created_at,
+        phases: r.phases ?? [],
+      }));
+
+      // Seed default roadmap for new users
+      if (roadmaps.length === 0) {
+        const { error } = await supabase.from('roadmaps').insert({
+          id: seedRoadmap.id,
+          user_id: userId,
+          name: seedRoadmap.name,
+          description: seedRoadmap.description,
+          created_at: seedRoadmap.createdAt,
+          phases: seedRoadmap.phases,
+        });
+        if (!error) roadmaps = [seedRoadmap];
       }
-    } catch {
-      // ignore parse errors
-    }
-    setHydrated(true);
-  }, []);
 
-  const persist = useCallback((next: AppState) => {
-    setState(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      // ignore storage errors
-    }
-  }, []);
+      const completedDays: CompletedDay[] = (daysData ?? []).map((d) => ({
+        date: d.date,
+        roadmapId: d.roadmap_id,
+        sprintId: d.sprint_id,
+        totalMinutes: d.total_minutes,
+        byCategory: d.by_category,
+      }));
 
-  const updateRoadmap = useCallback(
-    (updated: Roadmap) => {
-      const roadmaps = state.roadmaps.map((r) => (r.id === updated.id ? updated : r));
-      persist({ ...state, roadmaps });
-    },
-    [state, persist]
-  );
+      setState({ ...defaultState, roadmaps, completedDays });
+      setHydrated(true);
+    }
+
+    load();
+  }, [user]);
+
+  // ─── Mutations (optimistic: update state immediately, sync to DB in background) ──
 
   const createRoadmap = useCallback(
     (name: string): Roadmap => {
@@ -61,50 +82,92 @@ export function useAppState() {
         createdAt: new Date().toISOString(),
         phases: [],
       };
-      persist({ ...state, roadmaps: [...state.roadmaps, roadmap] });
+      setState((prev) => ({ ...prev, roadmaps: [...prev.roadmaps, roadmap] }));
+      if (user) {
+        supabase.from('roadmaps').insert({
+          id: roadmap.id,
+          user_id: user.id,
+          name: roadmap.name,
+          created_at: roadmap.createdAt,
+          phases: roadmap.phases,
+        });
+      }
       return roadmap;
     },
-    [state, persist]
+    [user]
   );
 
   const renameRoadmap = useCallback(
     (id: string, name: string) => {
-      const roadmaps = state.roadmaps.map((r) =>
-        r.id === id ? { ...r, name: name.trim() } : r
-      );
-      persist({ ...state, roadmaps });
+      setState((prev) => ({
+        ...prev,
+        roadmaps: prev.roadmaps.map((r) => (r.id === id ? { ...r, name: name.trim() } : r)),
+      }));
+      if (user) {
+        supabase.from('roadmaps').update({ name: name.trim() }).eq('id', id);
+      }
     },
-    [state, persist]
+    [user]
   );
 
-  const setSessionPlan = useCallback(
-    (plan: SessionPlan | null) => {
-      persist({ ...state, currentSessionPlan: plan });
+  const updateRoadmap = useCallback(
+    (updated: Roadmap) => {
+      setState((prev) => ({
+        ...prev,
+        roadmaps: prev.roadmaps.map((r) => (r.id === updated.id ? updated : r)),
+      }));
+      if (user) {
+        supabase.from('roadmaps').update({
+          name: updated.name,
+          description: updated.description,
+          phases: updated.phases,
+        }).eq('id', updated.id);
+      }
     },
-    [state, persist]
+    [user]
   );
 
-  const startPracticeSession = useCallback(
-    (session: PracticeSession) => {
-      persist({ ...state, activePracticeSession: session });
-    },
-    [state, persist]
-  );
+  const setSessionPlan = useCallback((plan: SessionPlan | null) => {
+    setState((prev) => ({ ...prev, currentSessionPlan: plan }));
+  }, []);
+
+  const startPracticeSession = useCallback((session: PracticeSession) => {
+    setState((prev) => ({ ...prev, activePracticeSession: session }));
+  }, []);
 
   const completeDay = useCallback(
     (day: CompletedDay) => {
-      const completedDays = [...state.completedDays.filter((d) => d.date !== day.date), day];
-      persist({ ...state, completedDays, activePracticeSession: null, currentSessionPlan: null });
+      setState((prev) => ({
+        ...prev,
+        completedDays: [
+          ...prev.completedDays.filter(
+            (d) => !(d.date === day.date && d.sprintId === day.sprintId)
+          ),
+          day,
+        ],
+        activePracticeSession: null,
+        currentSessionPlan: null,
+      }));
+      if (user) {
+        supabase.from('completed_days').upsert(
+          {
+            user_id: user.id,
+            roadmap_id: day.roadmapId,
+            sprint_id: day.sprintId,
+            date: day.date,
+            total_minutes: day.totalMinutes,
+            by_category: day.byCategory,
+          },
+          { onConflict: 'user_id,sprint_id,date' }
+        );
+      }
     },
-    [state, persist]
+    [user]
   );
 
-  const updatePracticeSession = useCallback(
-    (session: PracticeSession) => {
-      persist({ ...state, activePracticeSession: session });
-    },
-    [state, persist]
-  );
+  const updatePracticeSession = useCallback((session: PracticeSession) => {
+    setState((prev) => ({ ...prev, activePracticeSession: session }));
+  }, []);
 
   return {
     state,
