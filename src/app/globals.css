@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -47,44 +49,49 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* ─── App Theme Variables ────────────────────────────────────────────────── */
+
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Dark theme (default) */
+  --t-bg:          #0f172a;
+  --t-surf:        #1e293b;
+  --t-surf2:       #162032;
+  --t-mid:         #334155;
+  --t-mid-hover:   #475569;
+  --t-mid-text:    #ffffff;
+  --t-bord:        #334155;
+  --t-bord2:       #1e293b;
+  --t-text:        #f1f5f9;
+  --t-head:        #ffffff;
+  --t-mute:        #94a3b8;
+  --t-mute2:       #64748b;
+  --t-mute3:       #475569;
+  --t-placeholder: #475569;
+  --t-input-focus: #64748b;
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
+html.light {
+  /* Light theme — cool blue-gray, not pure white */
+  --t-bg:          #eef2f7;
+  --t-surf:        #ffffff;
+  --t-surf2:       #f1f5f9;
+  --t-mid:         #e2e8f0;
+  --t-mid-hover:   #cbd5e1;
+  --t-mid-text:    #1e293b;
+  --t-bord:        #cbd5e1;
+  --t-bord2:       #e2e8f0;
+  --t-text:        #1e293b;
+  --t-head:        #0f172a;
+  --t-mute:        #64748b;
+  --t-mute2:       #94a3b8;
+  --t-mute3:       #cbd5e1;
+  --t-placeholder: #94a3b8;
+  --t-input-focus: #94a3b8;
+}
+
+:root {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
@@ -106,6 +113,7 @@
   --chart-3: oklch(0.546 0.245 262.881);
   --chart-4: oklch(0.488 0.243 264.376);
   --chart-5: oklch(0.424 0.199 265.638);
+  --radius: 0.625rem;
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -119,11 +127,45 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
   }
   html {
     @apply font-sans;
   }
+}
+
+/* Monospace for timers and code-like elements */
+.font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+/* ─── Theme-aware body background ───────────────────────────────────────── */
+body {
+  background-color: var(--t-bg) !important;
+}
+
+/* ─── Custom scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--t-surf);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--t-mid);
+  border-radius: 2px;
+}
+
+/* Remove number input arrows */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
 }
