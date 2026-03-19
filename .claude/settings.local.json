@@ -6,7 +6,8 @@
       "Bash(npx shadcn@latest add button card checkbox slider badge progress tabs separator scroll-area -y)",
       "Bash(npm install:*)",
       "Bash(npm run:*)",
-      "Bash(gh auth:*)"
+      "Bash(gh auth:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

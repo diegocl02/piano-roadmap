@@ -74,6 +74,23 @@ export function useAppState() {
 
   // ─── Mutations (optimistic: update state immediately, sync to DB in background) ──
 
+  const deleteRoadmap = useCallback(
+    (id: string) => {
+      setState((prev) => ({
+        ...prev,
+        roadmaps: prev.roadmaps.filter((r) => r.id !== id),
+        completedDays: prev.completedDays.filter((d) => d.roadmapId !== id),
+      }));
+      if (user) {
+        supabase.from('roadmaps').delete().eq('id', id)
+          .then(({ error }) => {
+            if (error) console.error('[deleteRoadmap]', error.message);
+          });
+      }
+    },
+    [user]
+  );
+
   const createRoadmap = useCallback(
     (name: string): Roadmap => {
       const roadmap: Roadmap = {
@@ -183,6 +200,7 @@ export function useAppState() {
     state,
     hydrated,
     createRoadmap,
+    deleteRoadmap,
     renameRoadmap,
     updateRoadmap,
     setSessionPlan,

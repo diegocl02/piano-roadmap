@@ -20,6 +20,7 @@ export default function Home() {
     state,
     hydrated,
     createRoadmap,
+    deleteRoadmap,
     renameRoadmap,
     updateRoadmap,
     setSessionPlan,
@@ -65,6 +66,11 @@ export default function Home() {
   const handleOpenRoadmap = (roadmap: Roadmap) => {
     setSelectedRoadmapId(roadmap.id);
     setView('overview');
+  };
+
+  const handleUpdateDescription = (id: string, description: string) => {
+    const roadmap = state.roadmaps.find((r) => r.id === id);
+    if (roadmap) updateRoadmap({ ...roadmap, description });
   };
 
   const handleCreateRoadmap = (name: string) => {
@@ -136,6 +142,8 @@ export default function Home() {
           onOpen={handleOpenRoadmap}
           onCreate={handleCreateRoadmap}
           onRename={renameRoadmap}
+          onUpdateDescription={handleUpdateDescription}
+          onDelete={deleteRoadmap}
         />
       )}
 
