@@ -11,6 +11,7 @@ import { Play, Pause, SkipForward, CheckCircle2, Plus } from 'lucide-react';
 
 interface PracticeModeProps {
   plan: SessionPlan;
+  initialSession?: PracticeSession;
   onComplete: (session: PracticeSession) => void;
   onUpdate: (session: PracticeSession) => void;
 }
@@ -48,8 +49,8 @@ function buildSession(plan: SessionPlan): PracticeSession {
   };
 }
 
-export function PracticeMode({ plan, onComplete, onUpdate }: PracticeModeProps) {
-  const [session, setSession] = useState<PracticeSession>(() => buildSession(plan));
+export function PracticeMode({ plan, initialSession, onComplete, onUpdate }: PracticeModeProps) {
+  const [session, setSession] = useState<PracticeSession>(() => initialSession ?? buildSession(plan));
   const [newObjective, setNewObjective] = useState('');
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pendingUpdateRef = useRef<PracticeSession | null>(null);

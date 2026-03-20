@@ -63,6 +63,14 @@ export default function Home() {
     } catch {}
   }, [view, selectedRoadmapId, selectedSprint]);
 
+  // Safety: if restored into a deep view but required data is missing, fall back
+  useEffect(() => {
+    if (!hydrated) return;
+    if (view === 'practice' && (!state.currentSessionPlan || !selectedSprint)) setView('roadmaps');
+    if (view === 'configure' && !selectedSprint) setView('roadmaps');
+    if (view === 'overview' && !selectedRoadmapId) setView('roadmaps');
+  }, [hydrated, view, state.currentSessionPlan, selectedSprint, selectedRoadmapId]);
+
   const selectedRoadmap: Roadmap | null =
     state.roadmaps.find((r) => r.id === selectedRoadmapId) ?? null;
 
@@ -81,7 +89,8 @@ export default function Home() {
   if (!user) return <LoginScreen />;
 
   // ── Data loading ──
-  if (!hydrated) {
+  const canRestorePractice = view === 'practice' && !!state.currentSessionPlan && !!selectedSprint;
+  if (!hydrated && !canRestorePractice) {
     return (
       <div className="min-h-screen bg-[var(--t-bg)] flex items-center justify-center">
         <div className="font-mono text-cyan-400 text-sm animate-pulse tracking-widest">
@@ -222,6 +231,7 @@ export default function Home() {
       {view === 'practice' && state.currentSessionPlan && selectedSprint && (
         <PracticeMode
           plan={state.currentSessionPlan}
+          initialSession={state.activePracticeSession ?? undefined}
           onComplete={handleCompleteSession}
           onUpdate={updatePracticeSession}
         />

@@ -98,7 +98,7 @@ export function useAppState() {
         defaultMinutes: si.default_minutes ?? 15,
       }));
 
-      setState({ ...defaultState, roadmaps, completedDays, roadmapSprintItems });
+      setState((prev) => ({ ...prev, roadmaps, completedDays, roadmapSprintItems }));
       setHydrated(true);
     }
 
