@@ -52,6 +52,15 @@ export function PracticeMode({ plan, onComplete, onUpdate }: PracticeModeProps) 
   const [session, setSession] = useState<PracticeSession>(() => buildSession(plan));
   const [newObjective, setNewObjective] = useState('');
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pendingUpdateRef = useRef<PracticeSession | null>(null);
+
+  // Flush any pending onUpdate calls after render (avoids setState-during-render warning)
+  useEffect(() => {
+    if (pendingUpdateRef.current) {
+      onUpdate(pendingUpdateRef.current);
+      pendingUpdateRef.current = null;
+    }
+  });
 
   const currentModule: ActiveModule = session.modules[session.currentModuleIndex];
   const totalSeconds = currentModule.plannedModule.allocatedMinutes * 60;
@@ -81,11 +90,11 @@ export function PracticeMode({ plan, onComplete, onUpdate }: PracticeModeProps) 
     (updater: (s: PracticeSession) => PracticeSession) => {
       setSession((prev) => {
         const next = updater(prev);
-        onUpdate(next);
+        pendingUpdateRef.current = next;
         return next;
       });
     },
-    [onUpdate]
+    []
   );
 
   useEffect(() => {

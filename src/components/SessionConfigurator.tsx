@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Play, Clock, Music, BookOpen, Zap } from 'lucide-react';
+import { Play, Clock, Music, BookOpen, Zap, GripVertical } from 'lucide-react';
 
 interface SessionConfiguratorProps {
   sprint: Sprint;
@@ -23,7 +23,6 @@ const categoryIcon: Record<StudyCategory, React.ReactNode> = {
   custom: <Clock className="w-4 h-4" />,
 };
 
-// Accent colors stay vibrant in both themes
 const categoryAccent: Record<StudyCategory, string> = {
   technique: 'text-cyan-500 border-cyan-500/30 bg-cyan-500/10',
   jazz: 'text-emerald-500 border-emerald-500/30 bg-emerald-500/10',
@@ -54,6 +53,9 @@ export function SessionConfigurator({ sprint, onStart }: SessionConfiguratorProp
     }))
   );
 
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
   const totalMinutes = modules
     .filter((m) => m.selected)
     .reduce((sum, m) => sum + m.allocatedMinutes, 0);
@@ -71,10 +73,34 @@ export function SessionConfigurator({ sprint, onStart }: SessionConfiguratorProp
     );
   }, []);
 
+  const handleDragStart = (index: number) => setDragIndex(index);
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    setDragOverIndex(index);
+  };
+  const handleDrop = (dropIndex: number) => {
+    if (dragIndex === null || dragIndex === dropIndex) {
+      setDragIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+    setModules((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(dragIndex, 1);
+      next.splice(dropIndex, 0, moved);
+      return next;
+    });
+    setDragIndex(null);
+    setDragOverIndex(null);
+  };
+  const handleDragEnd = () => {
+    setDragIndex(null);
+    setDragOverIndex(null);
+  };
+
   const handleStart = useCallback(() => {
     const selectedModules = modules.filter((m) => m.selected);
     if (selectedModules.length === 0) return;
-
     const plan: SessionPlan = {
       sprintId: sprint.id,
       date: today,
@@ -102,23 +128,37 @@ export function SessionConfigurator({ sprint, onStart }: SessionConfiguratorProp
           </div>
           <h1 className="text-2xl font-bold text-[var(--t-head)]">{sprint.name}</h1>
           <p className="text-[var(--t-mute)] text-sm mt-1 font-mono">
-            {today} — Configura tu sesión de práctica
+            {today} — Configure your practice session
           </p>
         </div>
 
         {/* Module Cards */}
         <div className="space-y-3 mb-6">
-          {modules.map((pm) => {
+          {modules.map((pm, index) => {
             const cat = pm.module.category;
+            const isDragging = dragIndex === index;
+            const isOver = dragOverIndex === index && dragIndex !== index;
             return (
               <Card
                 key={pm.moduleId}
-                className={`bg-[var(--t-surf)] border border-[var(--t-bord2)] border-l-4 ${accentBorder[cat]} transition-opacity ${
+                draggable
+                onDragStart={() => handleDragStart(index)}
+                onDragOver={(e) => handleDragOver(e, index)}
+                onDrop={() => handleDrop(index)}
+                onDragEnd={handleDragEnd}
+                className={`bg-[var(--t-surf)] border border-[var(--t-bord2)] border-l-4 ${accentBorder[cat]} transition-all ${
                   !pm.selected ? 'opacity-40' : ''
+                } ${isDragging ? 'opacity-50 scale-[0.98]' : ''} ${
+                  isOver ? 'border-t-2 border-t-cyan-500' : ''
                 }`}
               >
                 <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-3">
+                    {/* Drag handle */}
+                    <div className="mt-1 cursor-grab active:cursor-grabbing text-[var(--t-mute3)] hover:text-[var(--t-mute2)] transition-colors shrink-0">
+                      <GripVertical className="w-4 h-4" />
+                    </div>
+
                     <Checkbox
                       id={pm.moduleId}
                       checked={pm.selected}
@@ -176,7 +216,7 @@ export function SessionConfigurator({ sprint, onStart }: SessionConfiguratorProp
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-mono text-[var(--t-mute2)] uppercase tracking-widest mb-1">
-                Duración Total
+                Total Duration
               </p>
               <p className="text-3xl font-mono font-bold text-[var(--t-head)]">
                 {formatTime(totalMinutes)}
@@ -184,7 +224,7 @@ export function SessionConfigurator({ sprint, onStart }: SessionConfiguratorProp
             </div>
             <div className="text-right">
               <p className="text-xs font-mono text-[var(--t-mute2)] uppercase tracking-widest mb-1">
-                Módulos Activos
+                Active Items
               </p>
               <p className="text-3xl font-mono font-bold text-cyan-500">
                 {modules.filter((m) => m.selected).length}
@@ -216,7 +256,7 @@ export function SessionConfigurator({ sprint, onStart }: SessionConfiguratorProp
           className="w-full h-14 text-base font-mono font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-900 rounded-xl transition-all disabled:opacity-30 gap-3"
         >
           <Play className="w-5 h-5 fill-current" />
-          INICIAR SESIÓN
+          START SESSION
         </Button>
       </div>
     </div>
