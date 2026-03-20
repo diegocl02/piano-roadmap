@@ -91,9 +91,73 @@ export interface CompletedDay {
   byCategory: Record<StudyCategory, number>;
 }
 
+// ─── Library ────────────────────────────────────────────────────────────────
+
+export interface ItemResource {
+  id: string;
+  url: string;
+  label: string;
+}
+
+export interface CurriculumItem {
+  id: string;
+  topicId: string;
+  name: string;
+  order: number;
+  notes?: string;
+  resources: ItemResource[];
+}
+
+export interface Topic {
+  id: string;
+  areaId: string;
+  name: string;
+  order: number;
+  items: CurriculumItem[];
+}
+
+export interface Area {
+  id: string;
+  name: string;
+  order: number;
+  topics: Topic[];
+}
+
+// ─── Roadmap Sprint ↔ Library Item ──────────────────────────────────────────
+
+export interface RoadmapSprintItem {
+  id: string;
+  sprintId: string;    // roadmap sprint id (stored in roadmap JSON)
+  roadmapId: string;
+  itemId: string;      // library item id
+  completed: boolean;
+  order: number;
+  defaultMinutes: number;
+}
+
+// ─── Curriculum Sprints ──────────────────────────────────────────────────────
+
+export interface SprintItem {
+  id: string;
+  sprintId: string;
+  itemId: string;
+  completed: boolean;
+  order: number;
+}
+
+export interface CurriculumSprint {
+  id: string;
+  name: string;
+  dayStart?: number;
+  dayEnd?: number;
+  createdAt: string;
+  sprintItems: SprintItem[];
+}
+
 export interface AppState {
   roadmaps: Roadmap[];
   completedDays: CompletedDay[];
+  roadmapSprintItems: RoadmapSprintItem[];
   currentSessionPlan: SessionPlan | null;
   activePracticeSession: PracticeSession | null;
   notificationTime?: string; // HH:MM

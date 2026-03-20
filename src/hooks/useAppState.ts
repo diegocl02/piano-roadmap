@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { AppState, Roadmap, SessionPlan, PracticeSession, CompletedDay } from '@/types';
+import { AppState, Roadmap, SessionPlan, PracticeSession, CompletedDay, RoadmapSprintItem } from '@/types';
 import { seedRoadmap } from '@/data/seedRoadmap';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const defaultState: AppState = {
   roadmaps: [],
   completedDays: [],
+  roadmapSprintItems: [],
   currentSessionPlan: null,
   activePracticeSession: null,
 };
@@ -31,9 +32,10 @@ export function useAppState() {
     async function load() {
       setHydrated(false);
 
-      const [{ data: roadmapsData }, { data: daysData }] = await Promise.all([
+      const [{ data: roadmapsData }, { data: daysData }, { data: sprintItemsData }] = await Promise.all([
         supabase.from('roadmaps').select('*').eq('user_id', userId).order('created_at'),
         supabase.from('completed_days').select('*').eq('user_id', userId),
+        supabase.from('roadmap_sprint_items').select('*').eq('user_id', userId),
       ]);
 
       let roadmaps: Roadmap[] = (roadmapsData ?? []).map((r) => ({
@@ -65,7 +67,17 @@ export function useAppState() {
         byCategory: d.by_category,
       }));
 
-      setState({ ...defaultState, roadmaps, completedDays });
+      const roadmapSprintItems: RoadmapSprintItem[] = (sprintItemsData ?? []).map((si) => ({
+        id: si.id,
+        sprintId: si.sprint_id,
+        roadmapId: si.roadmap_id,
+        itemId: si.item_id,
+        completed: si.completed,
+        order: si.order_index,
+        defaultMinutes: si.default_minutes ?? 15,
+      }));
+
+      setState({ ...defaultState, roadmaps, completedDays, roadmapSprintItems });
       setHydrated(true);
     }
 
@@ -196,6 +208,66 @@ export function useAppState() {
     setState((prev) => ({ ...prev, activePracticeSession: session }));
   }, []);
 
+  const addRoadmapSprintItem = useCallback(
+    (sprintId: string, roadmapId: string, itemId: string) => {
+      if (!user) return;
+      const si: RoadmapSprintItem = {
+        id: crypto.randomUUID(), sprintId, roadmapId, itemId, completed: false, order: Date.now(), defaultMinutes: 15,
+      };
+      setState((prev) => ({ ...prev, roadmapSprintItems: [...prev.roadmapSprintItems, si] }));
+      supabase.from('roadmap_sprint_items').insert({
+        id: si.id, user_id: user.id, roadmap_id: roadmapId, sprint_id: sprintId,
+        item_id: itemId, completed: false, order_index: si.order, default_minutes: 15,
+      }).then(({ error }) => { if (error) console.error('[addRoadmapSprintItem]', error.message); });
+    },
+    [user]
+  );
+
+  const removeRoadmapSprintItem = useCallback(
+    (id: string) => {
+      setState((prev) => ({
+        ...prev,
+        roadmapSprintItems: prev.roadmapSprintItems.filter((si) => si.id !== id),
+      }));
+      if (user) supabase.from('roadmap_sprint_items').delete().eq('id', id)
+        .then(({ error }) => { if (error) console.error('[removeRoadmapSprintItem]', error.message); });
+    },
+    [user]
+  );
+
+  const updateRoadmapSprintItemMinutes = useCallback(
+    (id: string, minutes: number) => {
+      setState((prev) => ({
+        ...prev,
+        roadmapSprintItems: prev.roadmapSprintItems.map((si) =>
+          si.id === id ? { ...si, defaultMinutes: minutes } : si
+        ),
+      }));
+      if (user) supabase.from('roadmap_sprint_items').update({ default_minutes: minutes }).eq('id', id)
+        .then(({ error }) => { if (error) console.error('[updateRoadmapSprintItemMinutes]', error.message); });
+    },
+    [user]
+  );
+
+  const toggleRoadmapSprintItem = useCallback(
+    (id: string) => {
+      setState((prev) => {
+        const si = prev.roadmapSprintItems.find((x) => x.id === id);
+        if (!si) return prev;
+        const newCompleted = !si.completed;
+        if (user) supabase.from('roadmap_sprint_items').update({ completed: newCompleted }).eq('id', id)
+          .then(({ error }) => { if (error) console.error('[toggleRoadmapSprintItem]', error.message); });
+        return {
+          ...prev,
+          roadmapSprintItems: prev.roadmapSprintItems.map((x) =>
+            x.id === id ? { ...x, completed: newCompleted } : x
+          ),
+        };
+      });
+    },
+    [user]
+  );
+
   return {
     state,
     hydrated,
@@ -207,5 +279,9 @@ export function useAppState() {
     startPracticeSession,
     completeDay,
     updatePracticeSession,
+    addRoadmapSprintItem,
+    removeRoadmapSprintItem,
+    toggleRoadmapSprintItem,
+    updateRoadmapSprintItemMinutes,
   };
 }

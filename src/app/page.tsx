@@ -3,19 +3,25 @@
 import { useState } from 'react';
 import { Roadmap, Sprint, SessionPlan, PracticeSession, CompletedDay, StudyCategory } from '@/types';
 import { useAppState } from '@/hooks/useAppState';
+import { useLibrary } from '@/hooks/useLibrary';
 import { useAuth } from '@/contexts/AuthContext';
 import { RoadmapList } from '@/components/RoadmapList';
 import { RoadmapOverview } from '@/components/RoadmapOverview';
 import { SessionConfigurator } from '@/components/SessionConfigurator';
 import { PracticeMode } from '@/components/PracticeMode';
+import { LibraryScreen } from '@/components/LibraryScreen';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LoginScreen } from '@/components/LoginScreen';
 import { LogOut } from 'lucide-react';
 
-type AppView = 'roadmaps' | 'overview' | 'configure' | 'practice';
+type AppView = 'roadmaps' | 'library' | 'overview' | 'configure' | 'practice';
+
+const TOP_LEVEL_VIEWS: AppView[] = ['roadmaps', 'library'];
+const NAV_LABELS: Record<string, string> = { roadmaps: 'ROADMAPS', library: 'LIBRERÍA' };
 
 export default function Home() {
   const { user, loading: authLoading, signOut } = useAuth();
+  const lib = useLibrary();
   const {
     state,
     hydrated,
@@ -27,6 +33,10 @@ export default function Home() {
     startPracticeSession,
     completeDay,
     updatePracticeSession,
+    addRoadmapSprintItem,
+    removeRoadmapSprintItem,
+    toggleRoadmapSprintItem,
+    updateRoadmapSprintItemMinutes,
   } = useAppState();
 
   void startPracticeSession;
@@ -135,6 +145,25 @@ export default function Home() {
         </button>
       </div>
 
+      {/* Section nav (top-level views only) */}
+      {TOP_LEVEL_VIEWS.includes(view) && (
+        <div className="fixed top-4 left-4 z-50 flex items-center gap-0.5">
+          {TOP_LEVEL_VIEWS.map((v) => (
+            <button
+              key={v}
+              onClick={() => setView(v)}
+              className={`text-xs font-mono px-2.5 py-1 rounded-md transition-colors ${
+                view === v
+                  ? 'text-cyan-400 bg-[var(--t-surf2)]'
+                  : 'text-[var(--t-mute2)] hover:text-[var(--t-text)] hover:bg-[var(--t-surf)]'
+              }`}
+            >
+              {NAV_LABELS[v]}
+            </button>
+          ))}
+        </div>
+      )}
+
       {view === 'roadmaps' && (
         <RoadmapList
           roadmaps={state.roadmaps}
@@ -155,6 +184,12 @@ export default function Home() {
             completedDays={state.completedDays}
             onSelectSprint={handleSelectSprint}
             onUpdate={updateRoadmap}
+            allLibItems={lib.allItems}
+            roadmapSprintItems={state.roadmapSprintItems.filter((si) => si.roadmapId === selectedRoadmapId)}
+            onAddSprintItem={addRoadmapSprintItem}
+            onRemoveSprintItem={removeRoadmapSprintItem}
+            onToggleSprintItem={toggleRoadmapSprintItem}
+            onUpdateSprintItemMinutes={updateRoadmapSprintItemMinutes}
           />
         </>
       )}
@@ -173,6 +208,8 @@ export default function Home() {
           onUpdate={updatePracticeSession}
         />
       )}
+
+      {view === 'library' && <LibraryScreen lib={lib} />}
     </>
   );
 }
