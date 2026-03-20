@@ -16,8 +16,29 @@ const defaultState: AppState = {
 
 export function useAppState() {
   const { user } = useAuth();
-  const [state, setState] = useState<AppState>(defaultState);
+  const [state, setState] = useState<AppState>(() => {
+    try {
+      const plan = sessionStorage.getItem('pra_plan');
+      const active = sessionStorage.getItem('pra_active');
+      return {
+        ...defaultState,
+        currentSessionPlan: plan ? JSON.parse(plan) : null,
+        activePracticeSession: active ? JSON.parse(active) : null,
+      };
+    } catch { return defaultState; }
+  });
   const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    try {
+      state.currentSessionPlan
+        ? sessionStorage.setItem('pra_plan', JSON.stringify(state.currentSessionPlan))
+        : sessionStorage.removeItem('pra_plan');
+      state.activePracticeSession
+        ? sessionStorage.setItem('pra_active', JSON.stringify(state.activePracticeSession))
+        : sessionStorage.removeItem('pra_active');
+    } catch {}
+  }, [state.currentSessionPlan, state.activePracticeSession]);
 
   // Load from Supabase whenever the user changes
   useEffect(() => {

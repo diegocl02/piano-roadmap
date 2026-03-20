@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Roadmap, Sprint, SessionPlan, PracticeSession, CompletedDay, StudyCategory } from '@/types';
 import { useAppState } from '@/hooks/useAppState';
 import { useLibrary } from '@/hooks/useLibrary';
@@ -41,9 +41,27 @@ export default function Home() {
 
   void startPracticeSession;
 
-  const [view, setView] = useState<AppView>('roadmaps');
-  const [selectedRoadmapId, setSelectedRoadmapId] = useState<string | null>(null);
-  const [selectedSprint, setSelectedSprint] = useState<Sprint | null>(null);
+  const [view, setView] = useState<AppView>(() => {
+    try { return (sessionStorage.getItem('pra_view') as AppView) ?? 'roadmaps'; } catch { return 'roadmaps'; }
+  });
+  const [selectedRoadmapId, setSelectedRoadmapId] = useState<string | null>(() => {
+    try { return sessionStorage.getItem('pra_roadmap_id'); } catch { return null; }
+  });
+  const [selectedSprint, setSelectedSprint] = useState<Sprint | null>(() => {
+    try { const s = sessionStorage.getItem('pra_sprint'); return s ? JSON.parse(s) : null; } catch { return null; }
+  });
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('pra_view', view);
+      selectedRoadmapId
+        ? sessionStorage.setItem('pra_roadmap_id', selectedRoadmapId)
+        : sessionStorage.removeItem('pra_roadmap_id');
+      selectedSprint
+        ? sessionStorage.setItem('pra_sprint', JSON.stringify(selectedSprint))
+        : sessionStorage.removeItem('pra_sprint');
+    } catch {}
+  }, [view, selectedRoadmapId, selectedSprint]);
 
   const selectedRoadmap: Roadmap | null =
     state.roadmaps.find((r) => r.id === selectedRoadmapId) ?? null;

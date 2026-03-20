@@ -53,6 +53,9 @@ export function PracticeMode({ plan, onComplete, onUpdate }: PracticeModeProps) 
   const [newObjective, setNewObjective] = useState('');
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pendingUpdateRef = useRef<PracticeSession | null>(null);
+  // Wall-clock timer: tracks when the current module's timer last started
+  const timerStartedAtRef = useRef<number | null>(null);
+  const baseElapsedRef = useRef<number>(0);
 
   // Flush any pending onUpdate calls after render (avoids setState-during-render warning)
   useEffect(() => {
@@ -103,13 +106,26 @@ export function PracticeMode({ plan, onComplete, onUpdate }: PracticeModeProps) 
       return;
     }
 
+    // On first start or after a restore from sessionStorage, initialize wall-clock refs
+    if (timerStartedAtRef.current === null) {
+      try {
+        const stored = sessionStorage.getItem('pra_timer_start');
+        timerStartedAtRef.current = stored ? parseInt(stored) : Date.now();
+      } catch {
+        timerStartedAtRef.current = Date.now();
+      }
+      baseElapsedRef.current = session.modules[session.currentModuleIndex].timeElapsed;
+    }
+
     intervalRef.current = setInterval(() => {
+      if (timerStartedAtRef.current === null) return;
+      const wallElapsed = Math.floor((Date.now() - timerStartedAtRef.current) / 1000);
+
       updateSession((prev) => {
         const modules = [...prev.modules];
         const current = { ...modules[prev.currentModuleIndex] };
-        current.timeElapsed += 1;
-
         const targetSeconds = current.plannedModule.allocatedMinutes * 60;
+        current.timeElapsed = Math.min(targetSeconds, baseElapsedRef.current + wallElapsed);
 
         if (current.timeElapsed >= targetSeconds) {
           current.status = 'completed';
@@ -118,9 +134,14 @@ export function PracticeMode({ plan, onComplete, onUpdate }: PracticeModeProps) 
 
           const nextIndex = prev.currentModuleIndex + 1;
           if (nextIndex < modules.length) {
+            timerStartedAtRef.current = Date.now();
+            baseElapsedRef.current = 0;
+            try { sessionStorage.setItem('pra_timer_start', String(timerStartedAtRef.current)); } catch {}
             modules[nextIndex] = { ...modules[nextIndex], status: 'running' };
             return { ...prev, modules, currentModuleIndex: nextIndex };
           } else {
+            timerStartedAtRef.current = null;
+            try { sessionStorage.removeItem('pra_timer_start'); } catch {}
             return { ...prev, modules, sessionStatus: 'completed' };
           }
         }
@@ -136,16 +157,31 @@ export function PracticeMode({ plan, onComplete, onUpdate }: PracticeModeProps) 
   }, [session.sessionStatus, session.currentModuleIndex, playAlert, updateSession]);
 
   const toggleTimer = useCallback(() => {
-    updateSession((prev) => ({
-      ...prev,
-      sessionStatus: prev.sessionStatus === 'running' ? 'paused' : 'running',
-    }));
+    updateSession((prev) => {
+      const isRunning = prev.sessionStatus === 'running';
+      if (isRunning) {
+        timerStartedAtRef.current = null;
+        try { sessionStorage.removeItem('pra_timer_start'); } catch {}
+      } else {
+        timerStartedAtRef.current = Date.now();
+        baseElapsedRef.current = prev.modules[prev.currentModuleIndex].timeElapsed;
+        try { sessionStorage.setItem('pra_timer_start', String(timerStartedAtRef.current)); } catch {}
+      }
+      return { ...prev, sessionStatus: isRunning ? 'paused' : 'running' };
+    });
   }, [updateSession]);
 
   const skipModule = useCallback(() => {
     updateSession((prev) => {
       const nextIndex = prev.currentModuleIndex + 1;
-      if (nextIndex >= prev.modules.length) return { ...prev, sessionStatus: 'completed' };
+      if (nextIndex >= prev.modules.length) {
+        timerStartedAtRef.current = null;
+        try { sessionStorage.removeItem('pra_timer_start'); } catch {}
+        return { ...prev, sessionStatus: 'completed' };
+      }
+      timerStartedAtRef.current = Date.now();
+      baseElapsedRef.current = 0;
+      try { sessionStorage.setItem('pra_timer_start', String(timerStartedAtRef.current)); } catch {}
       const modules = [...prev.modules];
       modules[nextIndex] = { ...modules[nextIndex], status: 'running' };
       return { ...prev, currentModuleIndex: nextIndex, modules };
