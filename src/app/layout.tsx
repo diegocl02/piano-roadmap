@@ -15,13 +15,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Piano Roadmap Architect",
-  description: "Crea y trackea planes de estudio personalizados de piano",
+  title: "Piano Roadmap",
+  description: "Build and track personalized piano study plans",
   manifest: "/manifest.json",
+  icons: {
+    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎹</text></svg>",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "PianoRoadmap",
+    title: "Piano Roadmap",
   },
 };
 
@@ -36,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="es"
+      lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>

@@ -17,7 +17,7 @@ import { LogOut } from 'lucide-react';
 type AppView = 'roadmaps' | 'library' | 'overview' | 'configure' | 'practice';
 
 const TOP_LEVEL_VIEWS: AppView[] = ['roadmaps', 'library'];
-const NAV_LABELS: Record<string, string> = { roadmaps: 'ROADMAPS', library: 'LIBRERÍA' };
+const NAV_LABELS: Record<string, string> = { roadmaps: 'ROADMAPS', library: 'LIBRARY' };
 
 export default function Home() {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -94,7 +94,7 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-[var(--t-bg)] flex items-center justify-center">
         <div className="font-mono text-cyan-400 text-sm animate-pulse tracking-widest">
-          CARGANDO...
+          LOADING...
         </div>
       </div>
     );
@@ -154,7 +154,7 @@ export default function Home() {
       onClick={() => setView(to)}
       className="fixed top-4 left-4 text-xs font-mono z-10 text-[var(--t-mute2)] hover:text-[var(--t-text)] transition-colors"
     >
-      ← VOLVER
+      ← BACK
     </button>
   );
 
@@ -165,7 +165,7 @@ export default function Home() {
         <ThemeToggle />
         <button
           onClick={signOut}
-          title="Cerrar sesión"
+          title="Sign out"
           className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--t-mute)] hover:text-[var(--t-text)] hover:bg-[var(--t-surf2)] transition-colors"
         >
           <LogOut className="w-4 h-4" />

@@ -231,15 +231,15 @@ export function PracticeMode({ plan, initialSession, onComplete, onUpdate }: Pra
     return (
       <div className="min-h-screen bg-[var(--t-bg)] flex flex-col items-center justify-center p-8 text-center">
         <CheckCircle2 className="w-20 h-20 text-emerald-500 mb-4" />
-        <h2 className="text-3xl font-bold text-[var(--t-head)] mb-2">¡Sesión Completada!</h2>
+        <h2 className="text-3xl font-bold text-[var(--t-head)] mb-2">Session Complete!</h2>
         <p className="text-[var(--t-mute)] font-mono mb-8">
-          {plan.totalMinutes} minutos de práctica
+          {plan.totalMinutes} minutes of practice
         </p>
         <Button
           onClick={() => onComplete(session)}
           className="bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-mono font-bold px-8 h-12"
         >
-          GUARDAR Y TERMINAR
+          SAVE & FINISH
         </Button>
       </div>
     );
@@ -253,7 +253,7 @@ export function PracticeMode({ plan, initialSession, onComplete, onUpdate }: Pra
         {/* Progress dots */}
         <div className="flex items-center justify-between mb-6 pt-2">
           <div className="text-xs font-mono text-[var(--t-mute2)] uppercase tracking-widest">
-            Módulo {session.currentModuleIndex + 1} / {session.modules.length}
+            Item {session.currentModuleIndex + 1} / {session.modules.length}
           </div>
           <div className="flex gap-1">
             {session.modules.map((m, i) => (
@@ -309,11 +309,11 @@ export function PracticeMode({ plan, initialSession, onComplete, onUpdate }: Pra
               >
                 {session.sessionStatus === 'running' ? (
                   <>
-                    <Pause className="w-5 h-5" /> PAUSA
+                    <Pause className="w-5 h-5" /> PAUSE
                   </>
                 ) : (
                   <>
-                    <Play className="w-5 h-5 fill-current" /> INICIAR
+                    <Play className="w-5 h-5 fill-current" /> START
                   </>
                 )}
               </Button>
@@ -332,7 +332,7 @@ export function PracticeMode({ plan, initialSession, onComplete, onUpdate }: Pra
         <Card className="bg-[var(--t-surf)] border-[var(--t-bord2)]">
           <CardContent className="p-4">
             <p className="text-xs font-mono text-[var(--t-mute2)] uppercase tracking-widest mb-3">
-              Sub-objetivos
+              Sub-objectives
             </p>
             <div className="space-y-2 mb-3">
               {currentModule.subObjectives.map((obj) => (
@@ -355,14 +355,14 @@ export function PracticeMode({ plan, initialSession, onComplete, onUpdate }: Pra
               ))}
               {currentModule.subObjectives.length === 0 && (
                 <p className="text-xs text-[var(--t-mute3)] font-mono">
-                  No hay sub-objetivos. Agrega uno abajo.
+                  No sub-objectives yet. Add one below.
                 </p>
               )}
             </div>
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="Agregar objetivo..."
+                placeholder="Add objective..."
                 value={newObjective}
                 onChange={(e) => setNewObjective(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addObjective()}

@@ -39,22 +39,20 @@ function ItemDetail({ item, lib }: { item: CurriculumItem; lib: Lib }) {
 
   return (
     <div className="ml-8 mt-1 mb-2 p-3 bg-[var(--t-surf2)] rounded-lg border border-[var(--t-bord2)] space-y-3">
-      {/* Notes */}
       <div>
         <div className="flex items-center gap-1 mb-1 text-[10px] font-mono text-[var(--t-mute2)] uppercase tracking-widest">
-          <FileText className="w-3 h-3" /> Notas
+          <FileText className="w-3 h-3" /> Notes
         </div>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           onBlur={saveNotes}
           rows={2}
-          placeholder="Notas de práctica..."
+          placeholder="Practice notes..."
           className="w-full bg-[var(--t-surf)] border border-[var(--t-bord)] rounded-md px-2 py-1.5 text-xs text-[var(--t-text)] placeholder:text-[var(--t-placeholder)] focus:outline-none focus:border-cyan-500 font-mono resize-none"
         />
       </div>
 
-      {/* Resources */}
       <div>
         <div className="flex items-center gap-1 mb-1 text-[10px] font-mono text-[var(--t-mute2)] uppercase tracking-widest">
           <Link className="w-3 h-3" /> Resources
@@ -86,7 +84,7 @@ function ItemDetail({ item, lib }: { item: CurriculumItem; lib: Lib }) {
           <input
             value={newLabel}
             onChange={(e) => setNewLabel(e.target.value)}
-            placeholder="Etiqueta"
+            placeholder="Label"
             className="w-20 bg-[var(--t-surf)] border border-[var(--t-bord)] rounded px-2 py-1 text-xs font-mono text-[var(--t-text)] placeholder:text-[var(--t-placeholder)] focus:outline-none focus:border-cyan-500"
           />
           <input
@@ -178,8 +176,8 @@ function ItemRow({
           <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 transition-opacity">
             {confirmDel ? (
               <>
-                <span className="text-[10px] font-mono text-red-400 mr-1">¿Eliminar?</span>
-                <button onClick={() => lib.deleteItem(item.id)} className="text-[10px] font-mono text-red-400 hover:text-red-300 font-semibold">Sí</button>
+                <span className="text-[10px] font-mono text-red-400 mr-1">Delete?</span>
+                <button onClick={() => lib.deleteItem(item.id)} className="text-[10px] font-mono text-red-400 hover:text-red-300 font-semibold">Yes</button>
                 <button onClick={() => setConfirmDel(false)} className="text-[10px] font-mono text-[var(--t-mute2)] hover:text-[var(--t-text)] ml-1">No</button>
               </>
             ) : (
@@ -276,8 +274,8 @@ function TopicSection({
           <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 transition-opacity">
             {confirmDel ? (
               <>
-                <span className="text-[10px] font-mono text-red-400 mr-1">¿Eliminar?</span>
-                <button onClick={() => lib.deleteTopic(topic.id)} className="text-[10px] font-mono text-red-400 hover:text-red-300 font-semibold">Sí</button>
+                <span className="text-[10px] font-mono text-red-400 mr-1">Delete?</span>
+                <button onClick={() => lib.deleteTopic(topic.id)} className="text-[10px] font-mono text-red-400 hover:text-red-300 font-semibold">Yes</button>
                 <button onClick={() => setConfirmDel(false)} className="text-[10px] font-mono text-[var(--t-mute2)] hover:text-[var(--t-text)] ml-1">No</button>
               </>
             ) : (
@@ -295,7 +293,7 @@ function TopicSection({
           <button
             onClick={() => { setCreating(true); setOpen(true); }}
             className="opacity-0 group-hover:opacity-100 text-[var(--t-mute2)] hover:text-cyan-400 transition-all p-0.5 ml-1"
-            title="Agregar ítem"
+            title="Add item"
           >
             <Plus className="w-3 h-3" />
           </button>
@@ -314,7 +312,7 @@ function TopicSection({
                 value={newItemName}
                 onChange={(e) => setNewItemName(e.target.value)}
                 onKeyDown={handleCreateKey}
-                placeholder="Nombre del ítem..."
+                placeholder="Item name..."
                 className="flex-1 bg-[var(--t-surf)] border border-[var(--t-bord)] rounded px-2 py-0.5 text-xs font-mono text-[var(--t-text)] placeholder:text-[var(--t-placeholder)] focus:outline-none focus:border-cyan-500"
               />
               <button onClick={submitCreate} disabled={!newItemName.trim()} className="text-emerald-500 hover:text-emerald-400 disabled:opacity-30"><Check className="w-3.5 h-3.5" /></button>
@@ -326,7 +324,7 @@ function TopicSection({
               onClick={() => setCreating(true)}
               className="ml-8 text-[10px] font-mono text-[var(--t-mute3)] hover:text-cyan-400 py-0.5 px-2 transition-colors flex items-center gap-1"
             >
-              <Plus className="w-2.5 h-2.5" /> Ítem
+              <Plus className="w-2.5 h-2.5" /> Item
             </button>
           )}
         </div>
@@ -401,7 +399,7 @@ function AreaSection({
           >
             {area.name}
             <span className="ml-2 text-[var(--t-mute3)] font-normal normal-case tracking-normal text-xs">
-              {area.topics.length} {area.topics.length === 1 ? 'tema' : 'temas'}
+              {area.topics.length} {area.topics.length === 1 ? 'topic' : 'topics'}
             </span>
           </span>
         )}
@@ -410,8 +408,8 @@ function AreaSection({
           <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 transition-opacity">
             {confirmDel ? (
               <>
-                <span className="text-xs font-mono text-red-400 mr-1">¿Eliminar?</span>
-                <button onClick={() => lib.deleteArea(area.id)} className="text-xs font-mono text-red-400 hover:text-red-300 font-semibold">Sí</button>
+                <span className="text-xs font-mono text-red-400 mr-1">Delete?</span>
+                <button onClick={() => lib.deleteArea(area.id)} className="text-xs font-mono text-red-400 hover:text-red-300 font-semibold">Yes</button>
                 <button onClick={() => setConfirmDel(false)} className="text-xs font-mono text-[var(--t-mute2)] hover:text-[var(--t-text)] ml-1">No</button>
               </>
             ) : (
@@ -429,9 +427,9 @@ function AreaSection({
           <button
             onClick={() => { setCreating(true); setOpen(true); }}
             className="opacity-0 group-hover:opacity-100 text-[var(--t-mute2)] hover:text-cyan-400 transition-all text-xs font-mono flex items-center gap-0.5 ml-1"
-            title="Agregar tema"
+            title="Add topic"
           >
-            <Plus className="w-3 h-3" /> Tema
+            <Plus className="w-3 h-3" /> Topic
           </button>
         )}
       </div>
@@ -448,7 +446,7 @@ function AreaSection({
                 value={newTopicName}
                 onChange={(e) => setNewTopicName(e.target.value)}
                 onKeyDown={handleCreateKey}
-                placeholder="Nombre del tema..."
+                placeholder="Topic name..."
                 className="flex-1 bg-[var(--t-surf)] border border-[var(--t-bord)] rounded px-2 py-0.5 text-xs font-mono text-[var(--t-text)] placeholder:text-[var(--t-placeholder)] focus:outline-none focus:border-cyan-500"
               />
               <button onClick={submitCreate} disabled={!newTopicName.trim()} className="text-emerald-500 hover:text-emerald-400 disabled:opacity-30"><Check className="w-3.5 h-3.5" /></button>
@@ -485,7 +483,7 @@ export function LibraryScreen({ lib }: { lib: Lib }) {
   if (!lib.hydrated) {
     return (
       <div className="min-h-screen bg-[var(--t-bg)] flex items-center justify-center">
-        <div className="font-mono text-cyan-400 text-sm animate-pulse tracking-widest">CARGANDO...</div>
+        <div className="font-mono text-cyan-400 text-sm animate-pulse tracking-widest">LOADING...</div>
       </div>
     );
   }
@@ -495,20 +493,20 @@ export function LibraryScreen({ lib }: { lib: Lib }) {
       <div className="max-w-2xl mx-auto">
         <div className="mb-6 pt-2">
           <div className="text-xs font-mono text-[var(--t-mute2)] tracking-widest uppercase mb-2">
-            Piano Roadmap Architect
+            Piano Roadmap
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-[var(--t-head)]">Librería</h1>
+              <h1 className="text-3xl font-bold text-[var(--t-head)]">Library</h1>
               <p className="text-[var(--t-mute)] text-sm mt-1">
-                Organiza tus Áreas, Temas e Ítems de estudio.
+                Organize your Areas, Topics and study Items.
               </p>
             </div>
             <button
               onClick={() => setCreatingArea(true)}
               className="flex items-center gap-1.5 text-sm font-mono text-cyan-400 hover:text-cyan-300 bg-[var(--t-surf)] hover:bg-[var(--t-surf2)] border border-[var(--t-bord2)] hover:border-[var(--t-bord)] rounded-lg px-3 py-1.5 transition-all"
             >
-              <Plus className="w-3.5 h-3.5" /> Nueva Área
+              <Plus className="w-3.5 h-3.5" /> New Area
             </button>
           </div>
         </div>
@@ -525,7 +523,7 @@ export function LibraryScreen({ lib }: { lib: Lib }) {
                 value={newAreaName}
                 onChange={(e) => setNewAreaName(e.target.value)}
                 onKeyDown={handleKey}
-                placeholder="Nombre del área..."
+                placeholder="Area name..."
                 className="flex-1 bg-[var(--t-surf2)] border border-[var(--t-bord)] rounded-md px-3 py-1.5 text-sm font-mono text-[var(--t-text)] placeholder:text-[var(--t-placeholder)] focus:outline-none focus:border-cyan-500"
               />
               <button onClick={submitCreate} disabled={!newAreaName.trim()} className="text-emerald-500 hover:text-emerald-400 disabled:opacity-30"><Check className="w-4 h-4" /></button>
@@ -539,7 +537,7 @@ export function LibraryScreen({ lib }: { lib: Lib }) {
               className="w-full border border-dashed border-[var(--t-bord)] rounded-xl p-8 flex flex-col items-center justify-center gap-2 text-sm font-mono text-[var(--t-mute2)] hover:text-[var(--t-text)] hover:bg-[var(--t-surf)] transition-all"
             >
               <Plus className="w-5 h-5" />
-              Crear primera Área
+              Create first Area
             </button>
           )}
         </div>

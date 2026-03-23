@@ -131,7 +131,7 @@ export function RoadmapOverview({
         {/* Header */}
         <div className="mb-8 pt-2">
           <div className="text-xs font-mono text-[var(--t-mute2)] tracking-widest uppercase mb-2">
-            Piano Roadmap Architect
+            Piano Roadmap
           </div>
           <h1 className="text-3xl font-bold text-[var(--t-head)] mb-1">{roadmap.name}</h1>
           {roadmap.description && (
@@ -143,7 +143,7 @@ export function RoadmapOverview({
         <div className="flex items-center gap-4 mb-4 px-1">
           <div className="flex items-center gap-1.5">
             <span className="text-[10px] font-mono text-[var(--t-mute2)] uppercase tracking-widest">
-              Tiempo
+              Time
             </span>
             <span className="text-sm font-mono font-bold text-cyan-500">
               {totalHours}h {remMinutes}m
@@ -152,7 +152,7 @@ export function RoadmapOverview({
           <span className="text-[var(--t-bord)] font-mono">·</span>
           <div className="flex items-center gap-1.5">
             <span className="text-[10px] font-mono text-[var(--t-mute2)] uppercase tracking-widest">
-              Días
+              Days
             </span>
             <span className="text-sm font-mono font-bold text-emerald-500">
               {completedDays.length}
@@ -201,7 +201,7 @@ export function RoadmapOverview({
         {/* Empty state */}
         {roadmap.phases.length === 0 && !addingPhase && (
           <div className="text-center py-12 text-[var(--t-mute2)] text-sm font-mono">
-            Este roadmap no tiene fases aún.
+            This roadmap has no phases yet.
           </div>
         )}
 
@@ -211,12 +211,12 @@ export function RoadmapOverview({
             <Card className="bg-[var(--t-surf)] border-[var(--t-bord2)]">
               <CardContent className="p-4 space-y-3">
                 <p className="text-xs font-mono text-[var(--t-mute2)] uppercase tracking-widest">
-                  Nueva Fase
+                  New Phase
                 </p>
                 <div className="flex gap-2">
                   <input
                     autoFocus
-                    placeholder="Nombre de la fase..."
+                    placeholder="Phase name..."
                     value={newPhaseName}
                     onChange={(e) => setNewPhaseName(e.target.value)}
                     onKeyDown={(e) => onKey(e, addPhase, () => setAddingPhase(false))}
@@ -230,7 +230,7 @@ export function RoadmapOverview({
                       onChange={(e) => setNewPhaseActiveDays(Number(e.target.value))}
                       className={`w-16 text-center ${inputCls}`}
                     />
-                    <span className="text-xs text-[var(--t-mute2)] font-mono">días</span>
+                    <span className="text-xs text-[var(--t-mute2)] font-mono">days</span>
                   </div>
                 </div>
                 <div className="flex gap-2 justify-end">
@@ -238,7 +238,7 @@ export function RoadmapOverview({
                     onClick={() => setAddingPhase(false)}
                     className="text-xs font-mono text-[var(--t-mute2)] hover:text-[var(--t-text)] transition-colors px-2"
                   >
-                    Cancelar
+                    Cancel
                   </button>
                   <Button
                     onClick={addPhase}
@@ -246,7 +246,7 @@ export function RoadmapOverview({
                     size="sm"
                     className="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-mono text-xs h-8 disabled:opacity-40"
                   >
-                    AGREGAR FASE
+                    ADD PHASE
                   </Button>
                 </div>
               </CardContent>
@@ -257,7 +257,7 @@ export function RoadmapOverview({
               className="w-full border border-dashed border-[var(--t-bord)] rounded-xl p-4 flex items-center justify-center gap-2 text-sm font-mono text-[var(--t-mute2)] hover:text-[var(--t-text)] hover:bg-[var(--t-surf)] transition-all"
             >
               <Plus className="w-4 h-4" />
-              Agregar Fase
+              Add Phase
             </button>
           )}
         </div>
@@ -319,7 +319,7 @@ function SprintItemPicker({
       <div className="bg-[var(--t-surf)] border border-[var(--t-bord)] rounded-xl w-full max-w-md max-h-[70vh] flex flex-col shadow-2xl">
         <div className="p-4 border-b border-[var(--t-bord2)]">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-mono font-semibold text-sm text-[var(--t-head)]">Agregar desde Librería</h3>
+            <h3 className="font-mono font-semibold text-sm text-[var(--t-head)]">Add from Library</h3>
             <button onClick={onClose} className="text-[var(--t-mute)] hover:text-[var(--t-text)]">
               <X className="w-4 h-4" />
             </button>
@@ -330,7 +330,7 @@ function SprintItemPicker({
               ref={inputRef}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar ítems..."
+              placeholder="Search items..."
               className="w-full bg-[var(--t-surf2)] border border-[var(--t-bord)] rounded-md pl-8 pr-3 py-1.5 text-sm font-mono text-[var(--t-text)] placeholder:text-[var(--t-placeholder)] focus:outline-none focus:border-cyan-500"
             />
           </div>
@@ -359,8 +359,8 @@ function SprintItemPicker({
           {filtered.length === 0 && (
             <div className="text-center py-8 text-xs font-mono text-[var(--t-mute3)]">
               {allLibItems.length === 0
-                ? 'No hay ítems en la librería todavía.'
-                : 'No se encontraron más ítems disponibles.'}
+                ? 'No library items yet.'
+                : 'No more items available.'}
             </div>
           )}
         </div>
@@ -398,8 +398,8 @@ function LibraryItemsSection({ sprint, lib }: { sprint: Sprint; lib: LibraryProp
         <BookOpen className="w-3 h-3 shrink-0" />
         <span className="flex-1 text-left">
           {myItems.length === 0
-            ? 'Sin ítems de librería'
-            : `${myItems.length} ${myItems.length === 1 ? 'ítem' : 'ítems'} · ${completed} completados`}
+            ? 'No library items'
+            : `${myItems.length} ${myItems.length === 1 ? 'item' : 'items'} · ${completed} completed`}
         </span>
         {isOpen ? (
           <ChevronRight className="w-3 h-3 rotate-90 transition-transform" />
@@ -436,7 +436,7 @@ function LibraryItemsSection({ sprint, lib }: { sprint: Sprint; lib: LibraryProp
                       )}
                     </>
                   ) : (
-                    <span className="italic text-[var(--t-mute3)]">ítem eliminado</span>
+                    <span className="italic text-[var(--t-mute3)]">deleted item</span>
                   )}
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
@@ -463,7 +463,7 @@ function LibraryItemsSection({ sprint, lib }: { sprint: Sprint; lib: LibraryProp
             onClick={() => lib.onOpenPicker(sprint.id)}
             className="flex items-center gap-1 text-xs font-mono text-[var(--t-mute2)] hover:text-cyan-400 transition-colors mt-1"
           >
-            <Plus className="w-3 h-3" /> Agregar desde librería
+            <Plus className="w-3 h-3" /> Add from library
           </button>
         </div>
       )}
@@ -512,12 +512,12 @@ function PhaseSection({
           variant="outline"
           className="text-xs font-mono text-[var(--t-mute)] border-[var(--t-bord)]"
         >
-          {phase.activeDays} días activos
+          {phase.activeDays} active days
         </Badge>
         <button
           onClick={onDeletePhase}
           className="ml-auto opacity-0 group-hover/phase:opacity-100 text-[var(--t-mute2)] hover:text-red-400 transition-all"
-          title="Eliminar fase"
+          title="Delete phase"
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>
@@ -539,7 +539,7 @@ function PhaseSection({
                 const item = itemMap.get(si.itemId);
                 return {
                   id: si.id,
-                  name: item?.name ?? 'Ítem',
+                  name: item?.name ?? 'Item',
                   category: 'custom' as StudyCategory,
                   description: item ? `${item.areaName} › ${item.topicName}` : undefined,
                   defaultMinutes: si.defaultMinutes,
@@ -560,7 +560,7 @@ function PhaseSection({
                   <h3 className="font-semibold text-[var(--t-head)] text-sm flex-1 mr-2">
                     {sprint.name}
                     <span className="ml-2 text-[var(--t-mute3)] font-mono font-normal text-xs">
-                      días {sprint.dayStart}–{sprint.dayEnd}
+                      days {sprint.dayStart}–{sprint.dayEnd}
                     </span>
                   </h3>
 
@@ -571,13 +571,13 @@ function PhaseSection({
                         size="sm"
                         className="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-mono text-xs h-8 gap-1"
                       >
-                        PRACTICAR <ChevronRight className="w-3 h-3" />
+                        PRACTICE <ChevronRight className="w-3 h-3" />
                       </Button>
                     )}
                     <button
                       onClick={() => onDeleteSprint(sprint.id)}
                       className="opacity-0 group-hover/sprint:opacity-100 text-[var(--t-mute2)] hover:text-red-400 transition-all"
-                      title="Eliminar sprint"
+                      title="Delete sprint"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -609,18 +609,18 @@ function PhaseSection({
           <Card className="bg-[var(--t-surf)] border-[var(--t-bord2)]">
             <CardContent className="p-4 space-y-3">
               <p className="text-xs font-mono text-[var(--t-mute2)] uppercase tracking-widest">
-                Nuevo Sprint
+                New Sprint
               </p>
               <input
                 autoFocus
-                placeholder="Nombre del sprint..."
+                placeholder="Sprint name..."
                 value={newSprintName}
                 onChange={(e) => setNewSprintName(e.target.value)}
                 onKeyDown={(e) => onKey(e, onAddSprint, onCancelSprintForm)}
                 className={`w-full ${inputCls}`}
               />
               <div className="flex items-center gap-2">
-                <span className="text-xs text-[var(--t-mute2)] font-mono">Días</span>
+                <span className="text-xs text-[var(--t-mute2)] font-mono">Days</span>
                 <input
                   type="number"
                   min={1}
@@ -642,7 +642,7 @@ function PhaseSection({
                   onClick={onCancelSprintForm}
                   className="text-xs font-mono text-[var(--t-mute2)] hover:text-[var(--t-text)] transition-colors px-2"
                 >
-                  Cancelar
+                  Cancel
                 </button>
                 <Button
                   onClick={onAddSprint}
@@ -650,7 +650,7 @@ function PhaseSection({
                   size="sm"
                   className="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-mono text-xs h-8 disabled:opacity-40"
                 >
-                  AGREGAR SPRINT
+                  ADD SPRINT
                 </Button>
               </div>
             </CardContent>
@@ -664,7 +664,7 @@ function PhaseSection({
             className="w-full border border-dashed border-[var(--t-bord)] rounded-lg p-3 flex items-center justify-center gap-2 text-xs font-mono text-[var(--t-mute2)] hover:text-[var(--t-text)] hover:bg-[var(--t-surf)] transition-all"
           >
             <Plus className="w-3.5 h-3.5" />
-            Agregar Sprint
+            Add Sprint
           </button>
         )}
       </div>
@@ -674,11 +674,11 @@ function PhaseSection({
 
 // ─── MiniCalendar ─────────────────────────────────────────────────────────────
 
-const WEEK_DAYS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+const WEEK_DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 const MONTH_NAMES = [
-  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
 function MiniCalendar({ roadmap, completedDays }: { roadmap: Roadmap; completedDays: CompletedDay[] }) {
@@ -786,13 +786,13 @@ function MiniCalendar({ roadmap, completedDays }: { roadmap: Roadmap; completedD
         <div className="flex items-center gap-4 mt-3 pt-3 border-t border-[var(--t-bord2)]">
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded-full bg-cyan-500" />
-            <span className="text-[10px] font-mono text-[var(--t-mute2)]">Hoy</span>
+            <span className="text-[10px] font-mono text-[var(--t-mute2)]">Today</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded-full bg-emerald-500/30 border border-emerald-500/50 flex items-center justify-center">
               <span className="w-1 h-1 rounded-full bg-emerald-500 block" />
             </div>
-            <span className="text-[10px] font-mono text-[var(--t-mute2)]">Sesión completada</span>
+            <span className="text-[10px] font-mono text-[var(--t-mute2)]">Session completed</span>
           </div>
         </div>
       </CardContent>

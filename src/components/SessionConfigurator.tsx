@@ -122,7 +122,7 @@ export function SessionConfigurator({ sprint, onStart }: SessionConfiguratorProp
         {/* Header */}
         <div className="mb-8 pt-2">
           <div className="flex items-center gap-2 text-xs font-mono text-[var(--t-mute2)] mb-2 tracking-widest uppercase">
-            <span>Piano Roadmap Architect</span>
+            <span>Piano Roadmap</span>
             <span>/</span>
             <span className="text-cyan-500">Session Config</span>
           </div>

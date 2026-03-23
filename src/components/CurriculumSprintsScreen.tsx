@@ -54,7 +54,7 @@ function ItemPicker({
       <div className="bg-[var(--t-surf)] border border-[var(--t-bord)] rounded-xl w-full max-w-md max-h-[70vh] flex flex-col shadow-2xl">
         <div className="p-4 border-b border-[var(--t-bord2)]">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-mono font-semibold text-sm text-[var(--t-head)]">Agregar Ítems al Sprint</h3>
+            <h3 className="font-mono font-semibold text-sm text-[var(--t-head)]">Add Items to Sprint</h3>
             <button onClick={onClose} className="text-[var(--t-mute)] hover:text-[var(--t-text)]">
               <X className="w-4 h-4" />
             </button>
@@ -65,7 +65,7 @@ function ItemPicker({
               ref={inputRef}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar ítems..."
+              placeholder="Search items..."
               className="w-full bg-[var(--t-surf2)] border border-[var(--t-bord)] rounded-md pl-8 pr-3 py-1.5 text-sm font-mono text-[var(--t-text)] placeholder:text-[var(--t-placeholder)] focus:outline-none focus:border-cyan-500"
             />
           </div>
@@ -95,9 +95,9 @@ function ItemPicker({
           {filtered.length === 0 && (
             <div className="text-center py-8 text-xs font-mono text-[var(--t-mute3)]">
               {lib.allItems.length === 0
-                ? 'No hay ítems en la librería todavía.'
+                ? 'No library items yet.'
                 : assignedItemIds.size === lib.allItems.length
-                ? 'Todos los ítems ya están en el sprint.'
+                ? 'All items are already in this sprint.'
                 : 'No se encontraron resultados.'}
             </div>
           )}
@@ -188,7 +188,7 @@ function SprintDetail({
           {total > 0 && (
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs font-mono text-[var(--t-mute2)]">
-                <span>{completed} / {total} completados</span>
+                <span>{completed} / {total} completed</span>
                 <span>{progress}%</span>
               </div>
               <div className="h-1.5 bg-[var(--t-surf2)] rounded-full overflow-hidden">
@@ -231,7 +231,7 @@ function SprintDetail({
                             </div>
                           </>
                         ) : (
-                          <span className="text-xs text-[var(--t-mute2)] italic font-mono">ítem eliminado</span>
+                          <span className="text-xs text-[var(--t-mute2)] italic font-mono">deleted item</span>
                         )}
                       </div>
 
@@ -297,7 +297,7 @@ function SprintDetail({
 
           {total === 0 && (
             <div className="text-center py-8 text-xs font-mono text-[var(--t-mute3)]">
-              Este sprint no tiene ítems todavía.
+              This sprint has no items yet.
             </div>
           )}
         </div>
@@ -307,7 +307,7 @@ function SprintDetail({
           size="sm"
           className="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-mono text-xs gap-1"
         >
-          <Plus className="w-3.5 h-3.5" /> Agregar Ítems
+          <Plus className="w-3.5 h-3.5" /> Add Items
         </Button>
       </div>
 
@@ -359,7 +359,7 @@ export function CurriculumSprintsScreen({ lib }: { lib: Lib }) {
   if (!lib.hydrated) {
     return (
       <div className="min-h-screen bg-[var(--t-bg)] flex items-center justify-center">
-        <div className="font-mono text-cyan-400 text-sm animate-pulse tracking-widest">CARGANDO...</div>
+        <div className="font-mono text-cyan-400 text-sm animate-pulse tracking-widest">LOADING...</div>
       </div>
     );
   }
@@ -369,11 +369,11 @@ export function CurriculumSprintsScreen({ lib }: { lib: Lib }) {
       <div className="max-w-2xl mx-auto">
         <div className="mb-8 pt-2">
           <div className="text-xs font-mono text-[var(--t-mute2)] tracking-widest uppercase mb-2">
-            Piano Roadmap Architect
+            Piano Roadmap
           </div>
           <h1 className="text-3xl font-bold text-[var(--t-head)]">Sprints</h1>
           <p className="text-[var(--t-mute)] text-sm mt-1">
-            Períodos de estudio con ítems asignados de la librería.
+            Study periods with library items assigned.
           </p>
         </div>
 
@@ -394,15 +394,15 @@ export function CurriculumSprintsScreen({ lib }: { lib: Lib }) {
                     <div className="flex-1 min-w-0">
                       <h2 className="font-semibold text-[var(--t-head)] text-base">{sprint.name}</h2>
                       <div className="text-xs font-mono text-[var(--t-mute2)] mt-0.5">
-                        {total} {total === 1 ? 'ítem' : 'ítems'}
-                        {total > 0 && ` · ${completed} completados`}
+                        {total} {total === 1 ? 'item' : 'items'}
+                        {total > 0 && ` · ${completed} completed`}
                       </div>
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
                       {isDeleting ? (
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-mono text-red-400">¿Eliminar?</span>
+                          <span className="text-xs font-mono text-red-400">Delete?</span>
                           <button onClick={() => { lib.deleteSprint(sprint.id); setDeletingId(null); }} className="text-xs font-mono text-red-400 hover:text-red-300 font-semibold">Sí</button>
                           <button onClick={() => setDeletingId(null)} className="text-xs font-mono text-[var(--t-mute2)] hover:text-[var(--t-text)]">No</button>
                         </div>
@@ -467,7 +467,7 @@ export function CurriculumSprintsScreen({ lib }: { lib: Lib }) {
               onClick={() => setCreating(true)}
               className="w-full border border-dashed border-[var(--t-bord)] rounded-xl p-4 flex items-center justify-center gap-2 text-sm font-mono text-[var(--t-mute2)] hover:text-[var(--t-text)] hover:bg-[var(--t-surf)] transition-all"
             >
-              <Plus className="w-4 h-4" /> Nuevo Sprint
+              <Plus className="w-4 h-4" /> New Sprint
             </button>
           )}
         </div>

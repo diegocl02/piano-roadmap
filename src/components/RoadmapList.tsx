@@ -26,20 +26,16 @@ function getStats(roadmap: Roadmap, completedDays: CompletedDay[]) {
 export function RoadmapList({
   roadmaps, completedDays, onOpen, onCreate, onRename, onUpdateDescription, onDelete,
 }: RoadmapListProps) {
-  // Name editing
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
   const editNameRef = useRef<HTMLInputElement>(null);
 
-  // Description editing
   const [editingDescId, setEditingDescId] = useState<string | null>(null);
   const [editingDesc, setEditingDesc] = useState('');
   const editDescRef = useRef<HTMLTextAreaElement>(null);
 
-  // Delete confirmation
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Create
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState('');
   const createInputRef = useRef<HTMLInputElement>(null);
@@ -60,8 +56,6 @@ export function RoadmapList({
     if (creating && createInputRef.current) createInputRef.current.focus();
   }, [creating]);
 
-  // ── Name ──────────────────────────────────────────────────────────────────
-
   const startEditName = (roadmap: Roadmap) => {
     setEditingId(roadmap.id);
     setEditingName(roadmap.name);
@@ -80,8 +74,6 @@ export function RoadmapList({
     if (e.key === 'Enter') submitName();
     if (e.key === 'Escape') cancelName();
   };
-
-  // ── Description ───────────────────────────────────────────────────────────
 
   const startEditDesc = (roadmap: Roadmap) => {
     setEditingDescId(roadmap.id);
@@ -102,14 +94,10 @@ export function RoadmapList({
     if (e.key === 'Escape') cancelDesc();
   };
 
-  // ── Delete ────────────────────────────────────────────────────────────────
-
   const confirmDelete = (id: string) => {
     onDelete(id);
     setDeletingId(null);
   };
-
-  // ── Create ────────────────────────────────────────────────────────────────
 
   const submitCreate = () => {
     if (newName.trim()) onCreate(newName.trim());
@@ -127,18 +115,16 @@ export function RoadmapList({
   return (
     <div className="min-h-screen bg-[var(--t-bg)] text-[var(--t-text)] p-4 md:p-8">
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
         <div className="mb-8 pt-2">
           <div className="text-xs font-mono text-[var(--t-mute2)] tracking-widest uppercase mb-2">
-            Piano Roadmap Architect
+            Piano Roadmap
           </div>
-          <h1 className="text-3xl font-bold text-[var(--t-head)]">Mis Roadmaps</h1>
+          <h1 className="text-3xl font-bold text-[var(--t-head)]">My Roadmaps</h1>
           <p className="text-[var(--t-mute)] text-sm mt-1">
-            Selecciona un roadmap para practicar o crea uno nuevo.
+            Select a roadmap to practice or create a new one.
           </p>
         </div>
 
-        {/* Cards */}
         <div className="space-y-3 mb-4">
           {roadmaps.map((roadmap) => {
             const { phases, sprints, daysCompleted } = getStats(roadmap, completedDays);
@@ -152,7 +138,6 @@ export function RoadmapList({
                 className="bg-[var(--t-surf)] border-[var(--t-bord2)] hover:border-[var(--t-bord)] transition-colors group"
               >
                 <CardContent className="p-4">
-                  {/* ── Name row ── */}
                   <div className="flex items-start gap-2 mb-1">
                     <div className="flex-1 min-w-0">
                       {isEditingName ? (
@@ -180,7 +165,7 @@ export function RoadmapList({
                           <button
                             onClick={() => startEditName(roadmap)}
                             className="opacity-0 group-hover:opacity-100 text-[var(--t-mute2)] hover:text-[var(--t-text)] transition-all shrink-0"
-                            title="Renombrar"
+                            title="Rename"
                           >
                             <Pencil className="w-3 h-3" />
                           </button>
@@ -188,17 +173,16 @@ export function RoadmapList({
                       )}
                     </div>
 
-                    {/* Actions (right side) */}
                     {!isEditingName && (
                       <div className="flex items-center gap-1.5 shrink-0">
                         {isConfirmingDelete ? (
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-mono text-red-400">¿Eliminar?</span>
+                            <span className="text-xs font-mono text-red-400">Delete?</span>
                             <button
                               onClick={() => confirmDelete(roadmap.id)}
                               className="text-xs font-mono text-red-400 hover:text-red-300 font-semibold transition-colors"
                             >
-                              Sí
+                              Yes
                             </button>
                             <button
                               onClick={() => setDeletingId(null)}
@@ -212,7 +196,7 @@ export function RoadmapList({
                             <button
                               onClick={() => { setDeletingId(roadmap.id); setEditingDescId(null); setEditingId(null); }}
                               className="opacity-0 group-hover:opacity-100 text-[var(--t-mute2)] hover:text-red-400 transition-all"
-                              title="Eliminar roadmap"
+                              title="Delete roadmap"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -221,7 +205,7 @@ export function RoadmapList({
                               size="sm"
                               className="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-mono text-xs h-8 gap-1"
                             >
-                              ABRIR <ChevronRight className="w-3 h-3" />
+                              OPEN <ChevronRight className="w-3 h-3" />
                             </Button>
                           </>
                         )}
@@ -229,7 +213,6 @@ export function RoadmapList({
                     )}
                   </div>
 
-                  {/* ── Description row ── */}
                   {isEditingDesc ? (
                     <div className="mb-3">
                       <textarea
@@ -239,18 +222,18 @@ export function RoadmapList({
                         onKeyDown={handleDescKey}
                         onBlur={submitDesc}
                         rows={2}
-                        placeholder="Descripción del roadmap..."
+                        placeholder="Roadmap description..."
                         className="w-full bg-[var(--t-surf2)] border border-[var(--t-bord)] rounded-md px-2 py-1.5 text-xs text-[var(--t-text)] placeholder:text-[var(--t-placeholder)] focus:outline-none focus:border-cyan-500 font-mono resize-none"
                       />
                       <p className="text-[10px] text-[var(--t-mute3)] font-mono mt-0.5">
-                        Enter para guardar · Shift+Enter para nueva línea · Esc para cancelar
+                        Enter to save · Shift+Enter for new line · Esc to cancel
                       </p>
                     </div>
                   ) : (
                     <div
                       className="mb-3 cursor-text group/desc"
                       onClick={() => startEditDesc(roadmap)}
-                      title="Editar descripción"
+                      title="Edit description"
                     >
                       {roadmap.description ? (
                         <p className="text-xs text-[var(--t-mute)] leading-relaxed group-hover/desc:text-[var(--t-text)] transition-colors">
@@ -258,21 +241,20 @@ export function RoadmapList({
                         </p>
                       ) : (
                         <p className="text-xs text-[var(--t-mute3)] italic opacity-0 group-hover:opacity-100 transition-opacity font-mono">
-                          + agregar descripción
+                          + add description
                         </p>
                       )}
                     </div>
                   )}
 
-                  {/* ── Stats ── */}
                   <div className="flex items-center gap-4 text-xs font-mono text-[var(--t-mute2)]">
                     <span className="flex items-center gap-1">
                       <Layers className="w-3 h-3" />
-                      {phases} {phases === 1 ? 'fase' : 'fases'} · {sprints} {sprints === 1 ? 'sprint' : 'sprints'}
+                      {phases} {phases === 1 ? 'phase' : 'phases'} · {sprints} {sprints === 1 ? 'sprint' : 'sprints'}
                     </span>
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      {daysCompleted} {daysCompleted === 1 ? 'día completado' : 'días completados'}
+                      {daysCompleted} {daysCompleted === 1 ? 'day completed' : 'days completed'}
                     </span>
                   </div>
                 </CardContent>
@@ -280,7 +262,6 @@ export function RoadmapList({
             );
           })}
 
-          {/* Create card */}
           {creating ? (
             <Card className="bg-[var(--t-surf)] border-[var(--t-bord2)]">
               <CardContent className="p-4">
@@ -290,7 +271,7 @@ export function RoadmapList({
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     onKeyDown={handleCreateKey}
-                    placeholder="Nombre del roadmap..."
+                    placeholder="Roadmap name..."
                     className="flex-1 bg-[var(--t-surf2)] border border-[var(--t-bord)] rounded-md px-3 py-1.5 text-sm text-[var(--t-text)] placeholder:text-[var(--t-placeholder)] focus:outline-none focus:border-cyan-500 font-mono"
                   />
                   <Button
@@ -299,7 +280,7 @@ export function RoadmapList({
                     disabled={!newName.trim()}
                     className="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-mono text-xs h-8 disabled:opacity-40"
                   >
-                    CREAR
+                    CREATE
                   </Button>
                   <button onClick={cancelCreate} className="text-[var(--t-mute)] hover:text-[var(--t-text)] transition-colors">
                     <X className="w-4 h-4" />
@@ -313,7 +294,7 @@ export function RoadmapList({
               className="w-full border border-dashed border-[var(--t-bord)] rounded-xl p-4 flex items-center justify-center gap-2 text-sm font-mono text-[var(--t-mute2)] hover:text-[var(--t-text)] hover:bg-[var(--t-surf)] transition-all"
             >
               <Plus className="w-4 h-4" />
-              Nuevo Roadmap
+              New Roadmap
             </button>
           )}
         </div>
