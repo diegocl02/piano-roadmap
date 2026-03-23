@@ -8,7 +8,11 @@
       "Bash(npm run:*)",
       "Bash(gh auth:*)",
       "Bash(git commit:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(clear:*)",
+      "Bash(sed -i '' 's/Piano Roadmap Architect/Piano Roadmap/g' src/components/RoadmapOverview.tsx src/components/SessionConfigurator.tsx)",
+      "Bash(__NEW_LINE_e7d17535ab49d12b__ sed -i '' 's/Tiempo/Time/g;:*)",
+      "Bash(git add:*)"
     ]
   }
 }
